@@ -2,7 +2,7 @@ import User from "../../Models/userModel.js"
 
 export const getAllUsers = async (req, res) => {
     try {
-        const allUsers = await User.find({ role: "user" }).select("-password -servicesOffered -adminVerified").lean();
+        const allUsers = await User.find({ role: "user" }).select("-password -servicesOffered").lean();
         if (allUsers.length === 0) {
             return res.send({
                 message: "No Users Found",
@@ -51,7 +51,7 @@ export const getAllProviders = async (req, res) => {
 export const getUserById = async (req, res) => {
     try {
         const { id } = req.params
-        const checkUser = await User.findOne({ $and: [{ _id: id }, { role: "user" }] }).select("-password -servicesOffered -adminVerified")
+        const checkUser = await User.findOne({ $and: [{ _id: id }, { role: "user" }] }).select("-password -servicesOffered")
         if (!checkUser) {
             return res.send({
                 message: "User Not Found",
@@ -96,7 +96,7 @@ export const getProviderById = async (req, res) => {
     }
 }
 
-export const updateProviderStatus = async (req, res) => {
+export const updateUserStatus = async (req, res) => {
     try {
         const { id } = req.params;
         const { status } = req.body
@@ -116,7 +116,7 @@ export const updateProviderStatus = async (req, res) => {
             });
         }
 
-        const checkUser = await User.findOneAndUpdate({ _id: id, role: "provider" }, { adminVerified: status }, { new: true }).select("-password")
+        const checkUser = await User.findOneAndUpdate({ _id: id }, { adminVerified: status }, { new: true }).select("-password")
         if (!checkUser) {
             return res.send({
                 message: "Provider Not Found",
@@ -124,11 +124,11 @@ export const updateProviderStatus = async (req, res) => {
             })
         }
         return res.send({
-            message: "Provider Profile Updated SuccessFully",
+            message: "Profile Updated SuccessFully",
             status: true
         })
     } catch (error) {
-        console.log("UPDATE PROVIDER STATUS BY ID ADMIN API ERROR", error)
+        console.log("UPDATE USER STATUS BY ID ADMIN API ERROR", error)
         return res.send({
             message: error.message || "No Provider Found",
             status: false,

@@ -179,7 +179,6 @@ export const getProfile = async (req, res) => {
       accountActive = userObj.adminVerified === "Approved";
     }
     if (!isProvider) {
-      delete userObj.adminVerified
       delete userObj.servicesOffered
     }
 
