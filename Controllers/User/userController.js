@@ -90,6 +90,7 @@ export const signUp = async (req, res) => {
       newUserData.aadhaarFrontPhoto = aadhaarFrontPhoto;
       newUserData.aadhaarBackPhoto = aadhaarBackPhoto;
       newUserData.adminVerified = "Pending";
+      newUserData.role = "provider"
     }
 
     const newUser = await User.create(newUserData);
