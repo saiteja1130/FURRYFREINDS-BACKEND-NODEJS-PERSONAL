@@ -51,7 +51,7 @@ export const getAllProviders = async (req, res) => {
 export const getUserById = async (req, res) => {
     try {
         const { id } = req.params
-        const checkUser = await User.findOne({ $and:[{_id:id},{role:"user"}] }).select("-password -servicesOffered -adminVerified")
+        const checkUser = await User.findOne({ $and: [{ _id: id }, { role: "user" }] }).select("-password -servicesOffered -adminVerified")
         if (!checkUser) {
             return res.send({
                 message: "User Not Found",
@@ -75,7 +75,7 @@ export const getUserById = async (req, res) => {
 export const getProviderById = async (req, res) => {
     try {
         const { id } = req.params
-        const checkUser = await User.findOne({ $and:[{_id:id},{role:"provider"}] }).select("-password")
+        const checkUser = await User.findOne({ $and: [{ _id: id }, { role: "provider" }] }).select("-password")
         if (!checkUser) {
             return res.send({
                 message: "Provider Not Found",
@@ -89,6 +89,46 @@ export const getProviderById = async (req, res) => {
         })
     } catch (error) {
         console.log("GET PROVIDER BY ID ADMIN API ERROR", error)
+        return res.send({
+            message: error.message || "No Provider Found",
+            status: false,
+        })
+    }
+}
+
+export const updateProviderStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body
+        if (!status) {
+            return res.send({
+                message: "Status feild is Required",
+                status: false,
+                error: ["status"]
+            })
+        }
+        const allowedStatus = ["Pending", "Approved", "Rejected", "Blocked"];
+        if (!allowedStatus.includes(status)) {
+            return res.status(400).json({
+                status: false,
+                message: "Invalid status value",
+                allowed: allowedStatus,
+            });
+        }
+
+        const checkUser = await User.findOneAndUpdate({ _id: id, role: "provider" }, { adminVerified: status }, { new: true }).select("-password")
+        if (!checkUser) {
+            return res.send({
+                message: "Provider Not Found",
+                status: false
+            })
+        }
+        return res.send({
+            message: "Provider Profile Updated SuccessFully",
+            status: true
+        })
+    } catch (error) {
+        console.log("UPDATE PROVIDER STATUS BY ID ADMIN API ERROR", error)
         return res.send({
             message: error.message || "No Provider Found",
             status: false,

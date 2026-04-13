@@ -77,8 +77,6 @@ const userSchema = new mongoose.Schema(
       enum: ["Pending", "Approved", "Rejected", "Blocked"]
     },
 
-
-
     isActive: {
       type: Boolean,
       default: true,
