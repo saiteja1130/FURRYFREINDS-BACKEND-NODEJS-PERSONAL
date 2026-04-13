@@ -1,6 +1,6 @@
-import { hashPassWord } from "../Helpers/hashPassWord.js";
-import { JWTtoken } from "../Helpers/JWTtoken.js";
-import User from "../Models/userModel.js";
+import { hashPassWord } from "../../Helpers/hashPassWord.js";
+import { JWTtoken } from "../../Helpers/JWTtoken.js";
+import User from "../../Models/userModel.js";
 import bcrypt from "bcrypt";
 
 export const signUp = async (req, res) => {

@@ -1,5 +1,5 @@
 import express from "express";
-import { getProfile, login, signUp } from "../Controllers/userController.js";
+import { getProfile, login, signUp } from "../Controllers/User/userController.js";
 import { verifyToken } from "../MiddleWares/verifyToken.js";
 import { upload } from "../MiddleWares/upload.js";
 
