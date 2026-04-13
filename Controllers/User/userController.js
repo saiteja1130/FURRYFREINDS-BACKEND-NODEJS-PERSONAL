@@ -16,6 +16,7 @@ export const signUp = async (req, res) => {
       servicesOffered,
       experience,
       aadhaarNumber,
+      device_token
     } = req.body;
     const aadhaarFrontPhoto = req.files?.aadhaarFrontPhoto?.[0]?.path;
     const aadhaarBackPhoto = req.files?.aadhaarBackPhoto?.[0]?.path;
@@ -30,6 +31,7 @@ export const signUp = async (req, res) => {
       gender,
       address,
       isProvider,
+      device_token
     };
 
     Object.keys(fields).forEach(f => {
@@ -81,6 +83,7 @@ export const signUp = async (req, res) => {
       gender,
       address,
       isProvider,
+      device_token
     };
 
     if (isProvider) {
@@ -121,11 +124,11 @@ export const signUp = async (req, res) => {
 
 export const login = async (req, res) => {
   try {
-    const { password, email } = req.body;
-    if (!email || !password) {
+    const { password, email, device_token } = req.body;
+    if (!email || !password || !device_token) {
       return res.send({
         status: false,
-        message: "Email and Password are required"
+        message: "Email , Device_tocken and Password  are required"
       });
     }
     const checkUser = await User.findOne({ email });
@@ -133,18 +136,20 @@ export const login = async (req, res) => {
     if (!checkUser) {
       return res.send({
         status: false,
-        message: 'User Not Found Please Register First',
+        message: "User Not Found Please Register First",
       });
     }
 
-    const matchPassWord = await bcrypt.compare(password, checkUser.password)
+    const matchPassWord = await bcrypt.compare(password, checkUser.password);
 
     if (!matchPassWord) {
       return res.send({
         status: false,
-        message: 'Incorrect Credentials',
+        message: "Incorrect Credentials",
       });
     }
+    checkUser.device_token = device_token;
+    await checkUser.save();
     const token = await JWTtoken(checkUser._id)
     return res.send({
       status: true,

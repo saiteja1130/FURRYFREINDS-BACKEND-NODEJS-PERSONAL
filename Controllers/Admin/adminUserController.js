@@ -2,7 +2,7 @@ import User from "../../Models/userModel.js"
 
 export const getAllUsers = async (req, res) => {
     try {
-        const allUsers = await User.find({ role: "user" }).select("-password -servicesOffered").lean();
+        const allUsers = await User.find({ role: "user" }).select("-password -servicesOffered -device_token").lean();
         if (allUsers.length === 0) {
             return res.send({
                 message: "No Users Found",
@@ -26,7 +26,7 @@ export const getAllUsers = async (req, res) => {
 
 export const getAllProviders = async (req, res) => {
     try {
-        const allUsers = await User.find({ role: "provider" }).select("-password -servicesOffered -adminVerified").lean();
+        const allUsers = await User.find({ role: "provider" }).select("-password -device_token").lean();
         if (allUsers.length === 0) {
             return res.send({
                 message: "No Users Found",
@@ -51,7 +51,7 @@ export const getAllProviders = async (req, res) => {
 export const getUserById = async (req, res) => {
     try {
         const { id } = req.params
-        const checkUser = await User.findOne({ $and: [{ _id: id }, { role: "user" }] }).select("-password -servicesOffered")
+        const checkUser = await User.findOne({ $and: [{ _id: id }, { role: "user" }] }).select("-password -servicesOffered -device_token")
         if (!checkUser) {
             return res.send({
                 message: "User Not Found",
@@ -75,7 +75,7 @@ export const getUserById = async (req, res) => {
 export const getProviderById = async (req, res) => {
     try {
         const { id } = req.params
-        const checkUser = await User.findOne({ $and: [{ _id: id }, { role: "provider" }] }).select("-password")
+        const checkUser = await User.findOne({ $and: [{ _id: id }, { role: "provider" }] }).select("-password -device_token")
         if (!checkUser) {
             return res.send({
                 message: "Provider Not Found",
