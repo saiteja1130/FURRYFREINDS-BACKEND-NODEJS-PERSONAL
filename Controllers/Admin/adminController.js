@@ -12,7 +12,7 @@ export const login = async (req, res) => {
                 message: "Email and Password are required"
             });
         }
-        const matchPassWord = await bcrypt.compare(password, checkUser.password)
+        const matchPassWord = await bcrypt.compare(password, checkAdmin.password)
         if (!matchPassWord) {
             return res.send({
                 status: false,
@@ -34,6 +34,28 @@ export const login = async (req, res) => {
     }
 }
 
-export const getAdminProfile=async()
+export const getAdminProfile = async (req, res) => {
+    try {
+        const adminId = req.userId;
+        const admin = await Admin.findById(adminId).select("-password");
+        if (!admin) {
+            return res.send({
+                status: false,
+                message: "Admin not found",
+            });
+        }
+        return res.send({
+            status: true,
+            message: "Admin profile fetched successfully",
+            data: admin,
+        });
+    } catch (error) {
+        console.log("GET ADMIN PROFILE ERROR", error);
+        return res.send({
+            status: false,
+            message: error.message,
+        });
+    }
+};
 
 
