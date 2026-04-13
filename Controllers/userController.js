@@ -16,13 +16,13 @@ export const signUp = async (req, res) => {
       servicesOffered,
       experience,
       aadhaarNumber,
-      aadhaarFrontPhoto,
-      aadhaarBackPhoto,
     } = req.body;
+    const aadhaarFrontPhoto = req.files?.aadhaarFrontPhoto?.[0]?.path;
+    const aadhaarBackPhoto = req.files?.aadhaarBackPhoto?.[0]?.path;
 
     let errors = [];
 
-    const feilds = {
+    const fields = {
       name,
       email,
       password,
@@ -32,25 +32,25 @@ export const signUp = async (req, res) => {
       isProvider,
     };
 
-    Object.keys(feilds).forEach(f => {
-      const value = feilds[f];
+    Object.keys(fields).forEach(f => {
+      const value = fields[f];
       if (!value && value !== false) {
         errors.push(f);
       }
     });
 
     if (isProvider) {
-      if (!servicesOffered) errors.push('servicesOffered');
-      if (!experience) errors.push('experience');
-      if (!aadhaarFrontPhoto) errors.push('aadhaarFrontPhoto');
-      if (!aadhaarNumber) errors.push('aadhaarNumber');
-      if (!aadhaarBackPhoto) errors.push('aadhaarBackPhoto');
+      if (!servicesOffered) errors.push("servicesOffered");
+      if (!experience) errors.push("experience");
+      if (!aadhaarNumber) errors.push("aadhaarNumber");
+      if (!aadhaarFrontPhoto) errors.push("aadhaarFrontPhoto");
+      if (!aadhaarBackPhoto) errors.push("aadhaarBackPhoto");
     }
 
     if (errors.length > 0) {
       return res.send({
         status: false,
-        message: 'Validation Error',
+        message: "Validation Error",
         errors,
       });
     }
@@ -60,60 +60,60 @@ export const signUp = async (req, res) => {
     if (checkUser) {
       return res.send({
         status: false,
-        message: 'User Already Exists Please Login',
+        message: "User Already Exists Please Login",
       });
     }
 
-    const responseHashPassword = await hashPassWord(password)
-    if (responseHashPassword.status === false) {
+    const responseHashPassword = await hashPassWord(password);
+
+    if (!responseHashPassword.status) {
       return res.send({
         status: false,
-        message: 'Hash Error While Hashing Password',
+        message: "Hash Error While Hashing Password",
       });
     }
 
-
-
     const newUserData = {
-      name: name,
-      email: email,
-      phone: phone,
+      name,
+      email,
+      phone,
       password: responseHashPassword.hashed,
-      gender: gender,
-      address: address,
-      isProvider: isProvider
-    }
+      gender,
+      address,
+      isProvider,
+    };
 
     if (isProvider) {
-      newUserData.servicesOffered = servicesOffered
-      newUserData.experience = experience
-      newUserData.aadhaarNumber = aadhaarNumber
-      newUserData.aadhaarFrontPhoto = ""
-      newUserData.aadhaarBackPhoto = ""
-      newUserData.adminVerified = false
+      newUserData.servicesOffered = servicesOffered;
+      newUserData.experience = experience;
+      newUserData.aadhaarNumber = aadhaarNumber;
+      newUserData.aadhaarFrontPhoto = aadhaarFrontPhoto;
+      newUserData.aadhaarBackPhoto = aadhaarBackPhoto;
+      newUserData.adminVerified = "Pending";
     }
 
-    const newUser = await User.create(newUserData)
+    const newUser = await User.create(newUserData);
 
     if (!newUser) {
       return res.send({
         status: false,
-        message: 'New User Creation Failed',
+        message: "New User Creation Failed",
       });
     }
 
-    const token = await JWTtoken(newUser._id)
+    const token = await JWTtoken(newUser._id);
+
     return res.send({
       status: true,
       message: `${isProvider ? "Provider" : "User"} Created Successfully`,
-      token: token
+      token,
     });
 
   } catch (error) {
-    console.log("USER SIGNUP CONTROLLER ERROR", error)
+    console.log("USER SIGNUP CONTROLLER ERROR", error);
     return res.send({
       status: false,
-      message: error.message || 'New User Creation Failed',
+      message: error.message || "New User Creation Failed",
     });
   }
 };
@@ -205,7 +205,7 @@ export const getProfile = async (req, res) => {
         user: userObj,
       });
     }
-   
+
 
     return res.send({
       status: true,
